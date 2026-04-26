@@ -1,0 +1,108 @@
+import java.util.*;
+
+class Student {
+    private String name;
+    private List<Integer> grades;
+
+    public Student(String name) {
+        this.name = name;
+        this.grades = new ArrayList<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void addGrade(int grade) {
+        grades.add(grade);
+    }
+
+    public double getAverage() {
+        if (grades.isEmpty()) return 0.0;
+        int sum = 0;
+        for (int g : grades) {
+            sum += g;
+        }
+        return (double) sum / grades.size();
+    }
+
+    public void displayGrades() {
+        System.out.println("Grades for " + name + ": " + grades);
+        System.out.println("Average: " + getAverage());
+    }
+}
+
+public class GradeTracker {
+    private static Map<String, Student> students = new HashMap<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("\n--- Student Grade Tracker ---");
+            System.out.println("1. Add Student");
+            System.out.println("2. Add Grade");
+            System.out.println("3. Show Student Grades");
+            System.out.println("4. Show All Students");
+            System.out.println("5. Exit");
+            System.out.print("Choose an option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1 -> addStudent();
+                case 2 -> addGrade();
+                case 3 -> showStudentGrades();
+                case 4 -> showAllStudents();
+                case 5 -> {
+                    System.out.println("Exiting... Goodbye!");
+                    return;
+                }
+                default -> System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+    private static void addStudent() {
+        System.out.print("Enter student name: ");
+        String name = scanner.nextLine();
+        students.put(name, new Student(name));
+        System.out.println("Student added successfully!");
+    }
+
+    private static void addGrade() {
+        System.out.print("Enter student name: ");
+        String name = scanner.nextLine();
+        Student student = students.get(name);
+        if (student == null) {
+            System.out.println("Student not found!");
+            return;
+        }
+        System.out.print("Enter grade: ");
+        int grade = scanner.nextInt();
+        scanner.nextLine();
+        student.addGrade(grade);
+        System.out.println("Grade added successfully!");
+    }
+
+    private static void showStudentGrades() {
+        System.out.print("Enter student name: ");
+        String name = scanner.nextLine();
+        Student student = students.get(name);
+        if (student == null) {
+            System.out.println("Student not found!");
+            return;
+        }
+        student.displayGrades();
+    }
+
+    private static void showAllStudents() {
+        if (students.isEmpty()) {
+            System.out.println("No students found.");
+            return;
+        }
+        for (Student s : students.values()) {
+            s.displayGrades();
+        }
+    }
+}
