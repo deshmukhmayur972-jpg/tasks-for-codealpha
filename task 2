@@ -1,0 +1,102 @@
+import java.util.*;
+
+class Stock {
+    private String symbol;
+    private double price;
+
+    public Stock(String symbol, double price) {
+        this.symbol = symbol;
+        this.price = price;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void updatePrice(double newPrice) {
+        this.price = newPrice;
+    }
+}
+
+class Portfolio {
+    private Map<String, Integer> holdings = new HashMap<>();
+    private double balance;
+
+    public Portfolio(double initialBalance) {
+        this.balance = initialBalance;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void buyStock(Stock stock, int quantity) {
+        double cost = stock.getPrice() * quantity;
+        if (cost > balance) {
+            System.out.println("Not enough balance to buy " + quantity + " shares of " + stock.getSymbol());
+            return;
+        }
+        balance -= cost;
+        holdings.put(stock.getSymbol(), holdings.getOrDefault(stock.getSymbol(), 0) + quantity);
+        System.out.println("Bought " + quantity + " shares of " + stock.getSymbol());
+    }
+
+    public void sellStock(Stock stock, int quantity) {
+        int owned = holdings.getOrDefault(stock.getSymbol(), 0);
+        if (quantity > owned) {
+            System.out.println("Not enough shares to sell.");
+            return;
+        }
+        holdings.put(stock.getSymbol(), owned - quantity);
+        balance += stock.getPrice() * quantity;
+        System.out.println("Sold " + quantity + " shares of " + stock.getSymbol());
+    }
+
+    public void showPortfolio(Map<String, Stock> market) {
+        System.out.println("\n--- Portfolio ---");
+        System.out.println("Balance: $" + balance);
+        for (String symbol : holdings.keySet()) {
+            int qty = holdings.get(symbol);
+            double price = market.get(symbol).getPrice();
+            System.out.println(symbol + ": " + qty + " shares (Current Price: $" + price + ")");
+        }
+    }
+}
+
+public class StockTradingPlatform {
+    private static Map<String, Stock> market = new HashMap<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        // Initialize some stocks
+        market.put("AAPL", new Stock("AAPL", 150.0));
+        market.put("GOOG", new Stock("GOOG", 2800.0));
+        market.put("TSLA", new Stock("TSLA", 700.0));
+
+        Portfolio portfolio = new Portfolio(10000.0); // starting balance
+
+        while (true) {
+            System.out.println("\n--- Stock Trading Platform ---");
+            System.out.println("1. View Market");
+            System.out.println("2. Buy Stock");
+            System.out.println("3. Sell Stock");
+            System.out.println("4. View Portfolio");
+            System.out.println("5. Exit");
+            System.out.print("Choose an option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1 -> viewMarket();
+                case 2 -> buyStock(portfolio);
+                case 3 -> sellStock(portfolio);
+                case 4 -> portfolio.showPortfolio(market);
+                case 5 -> {
+                    System.out.println("Exiting... Goodbye!");
+                    return;
+                }
